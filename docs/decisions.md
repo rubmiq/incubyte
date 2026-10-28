@@ -73,6 +73,42 @@ is written, rather than relied on from memory.
   mistakes the brief explicitly warns against, and matches
   `backend/AGENTS.md`'s same-origin session requirement.
 
+## Spring Boot 4 package relocations (verified against resolved jars)
+
+- **Finding**: Spring Boot 4.1.2 defaults to **Jackson 3** (`tools.jackson.databind.ObjectMapper`,
+  artifact `tools.jackson.core:jackson-databind:3.1.7`) as the autoconfigured
+  `ObjectMapper` bean, not the legacy `com.fasterxml.jackson.databind.ObjectMapper`
+  (`com.fasterxml.jackson.core:jackson-databind:2.21.7`, also present on the
+  classpath but not the wired bean). `@WebMvcTest` also moved package, to
+  `org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest` (artifact
+  `spring-boot-webmvc-test`).
+- **Verification**: both were confirmed by inspecting the actual resolved
+  `.m2` jars (`javap`/`unzip -l`) after compile/test failures pointed at the
+  old package names, rather than assumed from memory, per this project's
+  "never invent APIs" rule.
+- **Why it matters**: any future Jackson-dependent code or test in this
+  repo (DTO (de)serialization tests, custom `ObjectMapper` customizers) must
+  import from `tools.jackson.*`, not `com.fasterxml.jackson.*`, or it will
+  fail to find the autoconfigured bean.
+
+## SPA fallback routing implementation
+
+- **Decision**: serve the Angular build via a `WebMvcConfigurer.addResourceHandlers()`
+  override (`/**` → `classpath:/static/`) with a custom `PathResourceResolver`
+  that returns the real file when present, `null` (→ 404) for unmatched
+  `api/`/`actuator/`-prefixed paths, and `index.html` otherwise.
+- **Alternatives tried and rejected**: a `ViewControllerRegistry` regex-capture
+  pattern (e.g. `/{path:^(?!api|actuator).*}/**`) — rejected after hitting two
+  separate `PathPattern` syntax errors: a capture-group name cannot be reused
+  twice in one pattern, and `**`/`{*...}` elements are only legal at the very
+  start or end of a pattern, never spanning a middle segment. Neither
+  restriction has a regex workaround within `PathPattern`.
+- **Reason**: resource resolution isn't subject to `PathPattern`'s
+  path-variable/wildcard placement rules, so it's the only approach that
+  correctly forwards arbitrary-depth deep links (e.g. `/employees/42`) to
+  the SPA shell while still serving real static assets and returning genuine
+  404s for unmatched API routes.
+
 ## CSV import/export
 
 - **Decision**: omitted from the MVP.
