@@ -18,7 +18,7 @@ Each entry: decision, alternatives considered, reason.
 | Component | Version | Verification source |
 |---|---|---|
 | Java | 21 LTS | Installed locally (`openjdk 21.0.13`); Spring Boot 4.1.2 requires Java 17+. |
-| Spring Boot | 4.1.2 | spring.io/projects/spring-boot (current GA); endoflife.date/spring-boot confirms 3.3/3.4/3.5 are past OSS support as of Oct 2026, so 4.1 is the only "supported stable" line. |
+| Spring Boot | 4.1.2 | spring.io/projects/spring-boot (current GA); endoflife.date/spring-boot confirms 3.3/3.4/3.5 are past OSS support as of Oct 2026, so 4.1 is the only "supported stable" line. (Spring Initializr labels this version "4.1.2.RELEASE" in its API; the real Maven Central artifact version is `4.1.2` with no suffix — confirmed via the artifact's `maven-metadata.xml` after the Initializr-labeled version failed to resolve.) |
 | Maven | Wrapper, Maven 3.9.x | No system `mvn` installed; Boot 4.1.2 requires Maven 3.6.3+. |
 | PostgreSQL | 18 | postgresql.org/support/versioning (current stable major; 19 is RC-only as of Oct 2026). |
 | Angular | 21.1.x | Matches globally-installed Angular CLI (21.1.5) and Node 22.18.0. Angular 22 (current latest) requires Node `^22.22.3`, which the installed Node does not satisfy; Angular 21 is confirmed in active/LTS support (not EOL) via angular.dev/reference/releases. |

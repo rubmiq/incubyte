@@ -1,15 +1,67 @@
-# Claude Code salary assessment starter
+# ACME Salary Management
 
-This is a prompt and instruction kit, not the implemented application.
+A small, auditable HR salary-management system: searchable employee
+directory, versioned compensation history, and a filtered payroll
+dashboard — built for ~10,000 synthetic employees across countries and
+currencies.
 
-1. Copy CLAUDE.md, AGENTS.md, frontend/AGENTS.md and backend/AGENTS.md into your repository, preserving paths. Merge existing instructions rather than overwriting them.
-2. Open Claude Code in that repository.
-3. Paste CLAUDE_CODE_PROMPT.md as your initial task, or ask Claude Code to read it and execute it.
-4. Review and commit the generated one-page requirements before allowing application scaffolding. The prompt requests this sequencing explicitly.
-5. Review real incremental diffs, domain rules and test results throughout development. Provide hosting credentials only through secure environment configuration when deployment is ready.
+Stack: Java 21 + Spring Boot 4.1.2 (Spring MVC, Spring Security, Spring
+Data JPA, Flyway) · Angular 21 (standalone, strict TypeScript, Angular
+Material) · PostgreSQL 18. See `docs/requirements.md` for product scope,
+`docs/design.md` for architecture, and `docs/decisions.md` for the
+version/rationale log.
 
-CLAUDE.md explicitly imports the AGENTS.md guides so Claude Code is instructed to read them. Other agent tools can also use the scoped AGENTS.md files.
+## Run it (Docker, fresh clone)
 
-Stack: modern Angular, Java/Spring Boot, PostgreSQL. The brief says “AngularJS for Java”; confirm whether they mean modern Angular. The kit records that assumption rather than implying the wording is unambiguous.
+Requires Docker with Compose v2.
 
-The implementation prompt includes product framing, realistic exclusions, cross-currency rules, auditability, concurrency, deterministic seeding, meaningful tests, deployment and video requirements. It requires honest reporting of any missing deployment or recording access.
+```bash
+cp .env.example .env     # edit values if you want non-default local credentials
+docker compose up --build
+```
+
+This builds the Angular production bundle, embeds it into the Spring Boot
+image as static resources (same-origin deployment — one process, one
+origin, no CORS), starts PostgreSQL with a persistent named volume, and
+applies Flyway migrations on boot. The app is served at
+`http://localhost:8080`.
+
+Seeding 10,000 synthetic employees is an explicit, opt-in operation (never
+a side effect of a normal boot) — see `docs/design.md` / `docs/decisions.md`
+for the seed command once the seeding slice lands.
+
+## Local development (without Docker)
+
+Backend (Java 21, no system Maven required — uses the Maven Wrapper):
+
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+
+Point it at a local PostgreSQL 18 (e.g. the `postgres` service from
+`docker compose up postgres`) via the `DB_HOST`, `DB_PORT`, `DB_NAME`,
+`DB_USER`, `DB_PASSWORD` environment variables, plus `DEMO_HR_USERNAME`
+and `DEMO_HR_PASSWORD` for the seeded demo account.
+
+Frontend (Node 22, Angular CLI 21):
+
+```bash
+cd frontend
+npm install
+npm start   # serves on http://localhost:4200, proxies /api to :8080
+```
+
+## Tests
+
+```bash
+cd backend && ./mvnw verify     # JUnit/AssertJ + Testcontainers PostgreSQL integration tests
+cd frontend && npm test         # Vitest-based unit tests
+cd frontend && npm run build    # strict production build
+```
+
+## Status
+
+This repository is being built in reviewable vertical slices, each ending
+in a commit; see `docs/decisions.md` and commit history for what has
+landed so far and what remains.
