@@ -51,6 +51,13 @@ public class Compensation {
 		return id;
 	}
 
+	public void changeSalary(BigDecimal amount, String currency, LocalDate effectiveFrom, Instant now) {
+		this.amount = amount;
+		this.currency = currency;
+		this.effectiveFrom = effectiveFrom;
+		this.updatedAt = now;
+	}
+
 	public Long getEmployeeId() {
 		return employeeId;
 	}
@@ -63,20 +70,12 @@ public class Compensation {
 		return amount;
 	}
 
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
-
 	public Long getVersion() {
 		return version;
 	}
 
 	public LocalDate getEffectiveFrom() {
 		return effectiveFrom;
-	}
-
-	public void setEffectiveFrom(LocalDate effectiveFrom) {
-		this.effectiveFrom = effectiveFrom;
 	}
 
 	public Instant getCreatedAt() {
@@ -87,7 +86,4 @@ public class Compensation {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(Instant updatedAt) {
-		this.updatedAt = updatedAt;
-	}
 }

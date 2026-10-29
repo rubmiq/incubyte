@@ -1,51 +1,42 @@
 # Implementation checkpoint — 2026-10-29
 
-## Implemented
+Implemented:
 
-- HR session API and Angular login/logout, with CSRF cookie renewal.
-- Employee directory with server-side filtering, bounded pagination and
-  allowlisted sorting with deterministic employee-code ordering.
-- Create, view, edit, archive and reactivate employee workflows.
-- URL query state restoration, cancelled stale list requests, loading,
-  empty, retryable list errors and visible lifecycle-action errors.
-- Profile length validation, generated OpenAPI snapshot and contract test.
-- Session-expiry handling redirects to login without replaying writes.
-- Windows Maven wrapper handles a normal non-symlink dependency directory.
-- CI workflow for backend verification and frontend tests/build.
+- HR session login/logout with CSRF renewal and session-expiry navigation.
+- Server-filtered/sorted/paginated employee directory, URL state restoration,
+  profile creation/editing, archive/reactivate and employee details.
+- Initial salary setup and updates in employee details, explicit local currency,
+  exact decimal-string salary API, validation and mandatory reasons.
+- Version-protected writes, atomic current salary/audit updates, immutable
+  before/after history with actor/time and server pagination. Conflicts preserve
+  drafts and require explicit refresh/review; archived employees are read-only.
+- Filtered payroll analytics and responsive filter spacing; USD handling,
+  breakdown rendering and stale-request cancellation fixed.
+- Explicit synthetic employee/compensation seed, Flyway migrations, generated
+  OpenAPI contract, Docker packaging and CI jobs.
+- Browser salary journey with real backend/database and two-tab conflict recovery.
 
-## Verification and limits
+See [testing](testing.md) for actual results and commands: 44 focused backend
+checks, 19 frontend unit tests, production build and a Microsoft Edge browser
+journey passed. PostgreSQL integration checks used isolated local PostgreSQL 17
+schemas because Docker Desktop's engine remains unavailable. The full
+PostgreSQL 18 Testcontainers suite, Docker image and remote CI are unverified.
 
-Frontend unit tests passed (7 tests), and the production build passed. Focused
-backend security, controller, pagination and OpenAPI tests passed (24 tests)
-without a database.
-The full `mvnw verify` was attempted and failed because Testcontainers could
-not connect to a Docker engine. Docker Desktop was started, but its backend
-remained unavailable. PostgreSQL migration/repository checks and complete
-browser journeys remain unverified. CI has been configured, not run remotely.
+Remaining assessment work:
 
-## Remaining core slices
+1. Analytics decimal-string wire format, exact numeric median and explicit
+   missing-FX handling; consistent population semantics for employees without salary.
+2. Seed count/rerun/status-distribution tests and bounded batch insertion;
+   measured list/analytics query plans and performance notes.
+3. Broader accessibility/responsive review and deployment smoke test.
+4. AI-usage record, performance report, demo script, submission checklist,
+   authorized deployment and recorded video. No deployment/video is claimed.
 
-1. Compensation migration, exact-decimal validation, atomic current/history
-   writes, expected-version conflicts and database rollback/concurrency tests.
-2. Salary editor and paginated history with explicit conflict recovery.
-3. Fixed labeled demo FX snapshot and SQL analytics with fixture-based tests.
-4. Explicit deterministic 10,000-employee seed command and rerun verification.
-5. Dashboard, browser journeys, query-plan review and Docker deployment smoke test.
-
-The app is an employee-management checkpoint, not a completed salary-management
-assessment. No deployed application or demo video is claimed.
-
-## API contract
-
-`docs/openapi.json` is exported from Springdoc, not maintained independently.
-Regenerate from `backend` (PowerShell uses `mvnw.cmd`):
+API contract export (from `backend`; Windows uses `mvnw.cmd`):
 
 ```sh
 ./mvnw test -Dtest=ApiContractTest -Dopenapi.output=../docs/openapi.json
 ```
 
-The contract test replaces persistence boundaries with mocks and excludes
-database auto-configuration solely in that test. Runtime and persistence tests
-still use PostgreSQL. Directory status defaults to all statuses when absent.
-Only the currently implemented endpoints are included; salary/analytics are
-not yet available. Server-side Bean Validation errors return 400.
+The contract test mocks application boundaries only; real transaction tests
+exercise PostgreSQL, including failed audit writes and competing salary changes.

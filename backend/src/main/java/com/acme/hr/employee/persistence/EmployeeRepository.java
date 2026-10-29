@@ -9,6 +9,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 
 	Optional<Employee> findByEmployeeCode(String employeeCode);
 
+	@org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+	@Query("select e from Employee e where e.employeeCode = :employeeCode")
+	Optional<Employee> findByEmployeeCodeForSalaryWrite(String employeeCode);
+
 	@Query(value = "SELECT nextval('employee_code_seq')", nativeQuery = true)
 	long nextEmployeeCodeSequence();
 }

@@ -1,0 +1,95 @@
+<mat-card class="salary-card">
+  <mat-card-header><mat-card-title>Gross annual base salary</mat-card-title></mat-card-header>
+  <mat-card-content>
+    @if (loading()) {
+      <p role="status">Loading salary…</p>
+    } @else if (loadError()) {
+      <p role="alert">Could not load the current salary.</p>
+      <button mat-button type="button" (click)="loadCurrent(code(), conflict())">Retry salary</button>
+    } @else {
+      @if (current(); as salary) {
+        <p class="current-salary"><strong>{{ salary.currency }} {{ salary.amount }}</strong> per year</p>
+        <p>Effective {{ salary.effectiveFrom }} · Updated {{ salary.updatedAt | date:'medium':'UTC' }} UTC</p>
+      } @else {
+        <p>No salary recorded. Enter the initial annual base salary below.</p>
+      }
+    }
+    @if (!active()) {
+      <p>Archived employees are read-only. Reactivate this employee before changing salary.</p>
+    }
+    @if (notice(); as message) { <p role="status">{{ message }}</p> }
+    @if (saveError(); as message) { <p role="alert">{{ message }}</p> }
+    @if (conflict()) {
+      <button mat-stroked-button type="button" [disabled]="loading()" (click)="loadCurrent(code(), true)">Refresh current salary</button>
+    }
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <fieldset [disabled]="!active() || loading() || loadError() || saving()">
+        <legend>{{ current() ? 'Change salary' : 'Set initial salary' }}</legend>
+        <div class="salary-fields">
+          <mat-form-field appearance="outline">
+            <mat-label>Annual amount</mat-label>
+            <input matInput formControlName="amount" inputmode="decimal" maxlength="12" autocomplete="off" />
+            <mat-hint>0.01–999999999.99, up to 2 decimal places</mat-hint>
+            @if (form.controls.amount.invalid) {
+              <mat-error>{{ form.controls.amount.getError('server') || 'Enter a positive amount with up to 2 decimal places.' }}</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Currency</mat-label>
+            <mat-select formControlName="currency">
+              @for (currency of currencies; track currency) { <mat-option [value]="currency">{{ currency }}</mat-option> }
+            </mat-select>
+            @if (form.controls.currency.invalid) { <mat-error>{{ form.controls.currency.getError('server') || 'Select a currency.' }}</mat-error> }
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" class="reason">
+          <mat-label>Reason for salary change</mat-label>
+          <textarea matInput formControlName="changeReason" maxlength="500" rows="3"></textarea>
+          @if (form.controls.changeReason.invalid) {
+            <mat-error>{{ form.controls.changeReason.getError('server') || 'Enter a reason (up to 500 characters).' }}</mat-error>
+          }
+        </mat-form-field>
+        <p>Changes take effect immediately. Amounts are gross annual base salary, not net pay.</p>
+        <button mat-flat-button type="submit" [disabled]="form.invalid || saving() || conflict() || !active() || loading() || loadError()">
+          {{ saving() ? 'Saving…' : 'Save salary' }}
+        </button>
+      </fieldset>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="salary-card">
+  <mat-card-header><mat-card-title>Salary history</mat-card-title></mat-card-header>
+  <mat-card-content>
+    @if (historyLoading()) {
+      <p role="status">Loading salary history…</p>
+    } @else if (historyError()) {
+      <p role="alert">Could not load salary history.</p>
+      <button mat-button type="button" (click)="loadHistory()">Retry history</button>
+    } @else if (history(); as page) {
+      @if (page.content.length === 0) {
+        <p>No salary changes recorded.</p>
+      } @else {
+        <div class="table-scroll" role="region" aria-label="Salary history" tabindex="0">
+          <table>
+            <caption>Salary changes in UTC, newest first</caption>
+            <thead><tr><th scope="col">When (UTC)</th><th scope="col">Previous salary</th><th scope="col">New annual salary</th><th scope="col">Changed by</th><th scope="col">Reason</th></tr></thead>
+            <tbody>
+              @for (entry of page.content; track entry.id) {
+                <tr>
+                  <td>{{ entry.createdAt | date:'medium':'UTC' }}</td>
+                  <td>{{ entry.previousAmount === null ? (entry.actor ? 'Initial salary' : 'Not recorded') : entry.previousCurrency + ' ' + entry.previousAmount }}</td>
+                  <td>{{ entry.currency }} {{ entry.amount }}</td>
+                  <td>{{ entry.actor || 'Not recorded (legacy)' }}</td>
+                  <td class="history-reason">{{ entry.changeReason }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <mat-paginator [length]="page.totalElements" [pageIndex]="historyPage()" [pageSize]="20" [hidePageSize]="true"
+          aria-label="Salary history pages" (page)="changePage($event)" />
+      }
+    }
+  </mat-card-content>
+</mat-card>

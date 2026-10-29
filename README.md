@@ -26,9 +26,10 @@ origin, no CORS), starts PostgreSQL with a persistent named volume, and
 applies Flyway migrations on boot. The app is served at
 `http://localhost:8080`.
 
-Seeding 10,000 synthetic employees is an explicit, opt-in operation (never
-a side effect of a normal boot) — see `docs/design.md` / `docs/decisions.md`
-for the seed command once the seeding slice lands.
+Seeding 10,000 synthetic employees is explicit and opt-in. Run
+`docker compose run --rm app --seed` against a fresh demo database; it leaves
+existing employee data unchanged. The seed process starts the application;
+stop that process when finished. Normal startup does not seed employees.
 
 ## Local development (without Docker)
 
@@ -62,12 +63,15 @@ cd frontend && npm run build    # strict production build
 
 ## Status
 
-This repository is being built in reviewable vertical slices, each ending
-in a commit; see `docs/decisions.md` and commit history for what has
-landed so far and what remains.
+Implemented: session login/logout, employee lifecycle and directory, current
+salary setup/updates with version conflicts, immutable paginated salary history,
+and filtered payroll analytics. Open an employee's details to manage salary.
+All salary edits require a reason and take effect immediately; archived employees
+are read-only. Existing seed audit records keep unknown actor/previous values.
 
 See [the implementation checkpoint](docs/progress.md) for completed workflows,
-verification limits and the remaining compensation, analytics and seed slices.
+verification limits and remaining submission work. See [salary workflow](docs/salary-workflow.md)
+and [testing instructions](docs/testing.md), including the real-browser salary journey.
 The generated API contract is checked in at [docs/openapi.json](docs/openapi.json).
 On Windows PowerShell use `npm.cmd` if script execution is restricted, and
 `mvnw.cmd` for the Maven Wrapper. Backend integration tests require a running

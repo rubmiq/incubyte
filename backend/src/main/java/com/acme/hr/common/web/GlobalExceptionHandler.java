@@ -25,6 +25,18 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
+	@ExceptionHandler(RequestValidationException.class)
+	ResponseEntity<ApiError> handleRequestValidation(RequestValidationException ex) {
+		return ResponseEntity.badRequest().body(new ApiError("VALIDATION_FAILED",
+				"One or more fields are invalid.", List.of(new ApiError.FieldError(ex.field(), ex.getMessage()))));
+	}
+
+	@ExceptionHandler(org.springframework.dao.OptimisticLockingFailureException.class)
+	ResponseEntity<ApiError> handleStaleSalary(org.springframework.dao.OptimisticLockingFailureException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+				.body(ApiError.of("CONFLICT", "This record changed. Refresh and review before saving again."));
+	}
+
 	@ExceptionHandler(AuthenticationException.class)
 	ResponseEntity<ApiError> handleAuthenticationFailure(AuthenticationException ex) {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

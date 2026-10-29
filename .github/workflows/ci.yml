@@ -30,3 +30,49 @@ jobs:
         working-directory: frontend
       - run: npm run build
         working-directory: frontend
+  salary-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: hr_e2e
+          POSTGRES_USER: hr_e2e
+          # Disposable runner-only database, not an application credential.
+          POSTGRES_PASSWORD: ${{ github.run_id }}
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U hr_e2e -d hr_e2e"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_NAME: hr_e2e
+      DB_USER: hr_e2e
+      DB_PASSWORD: ${{ github.run_id }}
+      DEMO_HR_USERNAME: hr.e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Generate ephemeral demo login
+        shell: bash
+        run: |
+          salary_test_password=$(openssl rand -hex 24)
+          echo "::add-mask::$salary_test_password"
+          echo "DEMO_HR_PASSWORD=$salary_test_password" >> "$GITHUB_ENV"
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: npm run test:e2e
+        working-directory: frontend

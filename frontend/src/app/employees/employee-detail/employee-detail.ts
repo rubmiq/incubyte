@@ -7,10 +7,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmployeeService } from '../employee.service';
 import { EmployeeDetail } from '../employee.model';
 import { COUNTRY_LABELS, DEPARTMENT_LABELS } from '../employee-reference-data';
+import { SalaryPanel } from '../../compensation/salary-panel';
 
 @Component({
   selector: 'app-employee-detail',
-  imports: [RouterLink, MatButtonModule, MatCardModule, MatProgressSpinnerModule],
+  imports: [RouterLink, MatButtonModule, MatCardModule, MatProgressSpinnerModule, SalaryPanel],
   templateUrl: './employee-detail.html',
   styleUrl: './employee-detail.scss',
 })

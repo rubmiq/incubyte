@@ -1,0 +1,13 @@
+.salary-card { margin: 1.5rem auto; max-width: 1000px; }
+mat-card-content { padding-top: 1rem; }
+.current-salary { font-size: 1.25rem; }
+fieldset { border: 0; padding: 0; min-width: 0; }
+legend { font-weight: 600; margin-bottom: 1rem; }
+.salary-fields { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-start; }
+.salary-fields mat-form-field { min-width: 220px; margin-bottom: 0.5rem; }
+.reason { width: 100%; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+caption { text-align: left; padding-bottom: 1rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.75rem; border-bottom: 1px solid #ddd; }
+.history-reason { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 160px; }

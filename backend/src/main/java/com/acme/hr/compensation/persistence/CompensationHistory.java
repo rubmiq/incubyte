@@ -31,6 +31,15 @@ public class CompensationHistory {
 	@Column(name = "created_at", nullable = false)
 	private Instant createdAt;
 
+	@Column(name = "previous_amount")
+	private BigDecimal previousAmount;
+
+	@Column(name = "previous_currency", length = 3)
+	private String previousCurrency;
+
+	@Column(length = 255)
+	private String actor;
+
 	public CompensationHistory() {
 	}
 
@@ -47,6 +56,18 @@ public class CompensationHistory {
 	public Long getId() {
 		return id;
 	}
+
+	public CompensationHistory(Long employeeId, String currency, BigDecimal amount, String changeReason,
+			LocalDate effectiveFrom, Instant now, BigDecimal previousAmount, String previousCurrency, String actor) {
+		this(employeeId, currency, amount, changeReason, effectiveFrom, now);
+		this.previousAmount = previousAmount;
+		this.previousCurrency = previousCurrency;
+		this.actor = actor;
+	}
+
+	public BigDecimal getPreviousAmount() { return previousAmount; }
+	public String getPreviousCurrency() { return previousCurrency; }
+	public String getActor() { return actor; }
 
 	public Long getEmployeeId() {
 		return employeeId;

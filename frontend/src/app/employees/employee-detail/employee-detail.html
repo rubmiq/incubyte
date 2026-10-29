@@ -38,4 +38,5 @@
       <a mat-button routerLink="/employees">Back to directory</a>
     </mat-card-actions>
   </mat-card>
+  <app-salary-panel [code]="person.employeeCode" [country]="person.country" [active]="person.status === 'ACTIVE'" />
 }
