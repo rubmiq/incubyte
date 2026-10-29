@@ -13,6 +13,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 
 import { EmployeeService } from '../employee.service';
 import { ApiError } from '../../core/api-error.model';
+import { NotificationService } from '../../core/notification.service';
 import {
   COUNTRIES,
   COUNTRY_LABELS,
@@ -41,6 +42,7 @@ import {
 export class EmployeeForm {
   private readonly employeeService = inject(EmployeeService);
   private readonly router = inject(Router);
+  private readonly notifications = inject(NotificationService);
 
   readonly code = input<string>();
 
@@ -128,11 +130,13 @@ export class EmployeeForm {
     request$.subscribe({
       next: (employee) => {
         this.submitting.set(false);
+        this.notifications.success(employeeCode ? 'Employee updated.' : 'Employee created.');
         void this.router.navigate(['/employees', employee.employeeCode]);
       },
       error: (error: HttpErrorResponse) => {
         this.submitting.set(false);
         this.applyServerError(error);
+        this.notifications.error(this.submitError() ?? 'Could not save employee. Please try again.');
       },
     });
   }

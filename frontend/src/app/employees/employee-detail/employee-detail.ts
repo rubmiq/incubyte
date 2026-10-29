@@ -8,6 +8,7 @@ import { EmployeeService } from '../employee.service';
 import { EmployeeDetail } from '../employee.model';
 import { COUNTRY_LABELS, DEPARTMENT_LABELS } from '../employee-reference-data';
 import { SalaryPanel } from '../../compensation/salary-panel';
+import { NotificationService } from '../../core/notification.service';
 
 @Component({
   selector: 'app-employee-detail',
@@ -17,6 +18,7 @@ import { SalaryPanel } from '../../compensation/salary-panel';
 })
 export class EmployeeDetailPage {
   private readonly employeeService = inject(EmployeeService);
+  private readonly notifications = inject(NotificationService);
 
   readonly code = input.required<string>();
 
@@ -58,10 +60,12 @@ export class EmployeeDetailPage {
       next: (employee) => {
         this.actionPending.set(false);
         this.employee.set(employee);
+        this.notifications.success('Employee archived.');
       },
       error: () => {
         this.actionPending.set(false);
         this.actionError.set('Could not archive this employee. Reload and try again.');
+        this.notifications.error('Could not archive employee. Please try again.');
       },
     });
   }
@@ -74,10 +78,12 @@ export class EmployeeDetailPage {
       next: (employee) => {
         this.actionPending.set(false);
         this.employee.set(employee);
+        this.notifications.success('Employee reactivated.');
       },
       error: () => {
         this.actionPending.set(false);
         this.actionError.set('Could not reactivate this employee. Reload and try again.');
+        this.notifications.error('Could not reactivate employee. Please try again.');
       },
     });
   }

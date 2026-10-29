@@ -16,14 +16,31 @@ test('HR establishes salary, updates it, checks audit and dashboard, and reviews
   const csrf = (await context.cookies()).find(cookie => cookie.name === 'XSRF-TOKEN');
   if (!csrf) throw new Error('CSRF cookie was not issued.');
   const headers = { 'X-XSRF-TOKEN': decodeURIComponent(csrf.value) };
-  const created = await page.request.post('/api/employees', { headers, data: {
-    firstName: 'Salary', lastName: 'Browser', email: `salary-browser-${Date.now()}@example.test`,
-    country: 'US', department: 'ENGINEERING', jobTitle: 'Synthetic test engineer', hiredOn: '2026-01-01',
-  } });
+  await page.goto('/employees/new');
+  await page.getByRole('textbox', { name: 'First name', exact: true }).fill('Salary');
+  await page.getByRole('textbox', { name: 'Last name', exact: true }).fill('Browser');
+  await page.getByRole('textbox', { name: 'Email', exact: true }).fill(`salary-browser-${Date.now()}@example.test`);
+  await page.getByRole('combobox', { name: 'Country', exact: true }).click();
+  await page.getByRole('option', { name: 'United States', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Department', exact: true }).click();
+  await page.getByRole('option', { name: 'Engineering', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Job title', exact: true }).fill('Synthetic test engineer');
+  await page.getByRole('textbox', { name: 'Hired on', exact: true }).fill('1/1/2026');
+  const creation = page.waitForResponse(response => response.url().endsWith('/api/employees')
+    && response.request().method() === 'POST');
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  const created = await creation;
   expect(created.status()).toBe(201);
   const employee: { employeeCode: string } = await created.json();
 
   try {
+    await expect(page).toHaveURL(new RegExp(`/employees/${employee.employeeCode}$`));
+    await expect(page.locator('mat-snack-bar-container.toast-success').filter({ hasText: 'Success: Employee created.' })).toBeVisible();
+    await page.getByRole('link', { name: 'Edit', exact: true }).click();
+    await page.getByRole('textbox', { name: 'Job title', exact: true }).fill('Updated synthetic test engineer');
+    await page.getByRole('button', { name: 'Save', exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/employees/${employee.employeeCode}$`));
+    await expect(page.locator('mat-snack-bar-container.toast-success').filter({ hasText: 'Success: Employee updated.' })).toBeVisible();
     await page.goto('/employees');
     await page.getByRole('textbox', { name: 'Search', exact: true }).fill(employee.employeeCode);
     const row = page.getByRole('row').filter({ hasText: employee.employeeCode });
@@ -34,6 +51,15 @@ test('HR establishes salary, updates it, checks audit and dashboard, and reviews
     await panel.getByRole('textbox', { name: 'Reason for salary change', exact: true }).fill('Initial browser test salary');
     await panel.getByRole('button', { name: 'Save salary', exact: true }).click();
     await expect(panel.getByRole('status').filter({ hasText: 'Salary saved.' })).toBeVisible();
+    const successToast = page.locator('mat-snack-bar-container.toast-success');
+    await expect(successToast).toContainText('Success: Salary saved.');
+    const bounds = await successToast.boundingBox();
+    if (!bounds) throw new Error('Success toast was not visible.');
+    const viewport = page.viewportSize();
+    if (!viewport) throw new Error('Browser viewport was not configured.');
+    expect(bounds.y).toBeLessThan(100);
+    expect(bounds.x + bounds.width).toBeGreaterThan(viewport.width - 50);
+    await successToast.getByRole('button', { name: 'Dismiss' }).click();
     await expect(panel.locator('tbody tr')).toHaveCount(1);
 
     const other = await context.newPage();
@@ -53,6 +79,7 @@ test('HR establishes salary, updates it, checks audit and dashboard, and reviews
 
     await draft.getByRole('button', { name: 'Save salary', exact: true }).click();
     await expect(draft.getByRole('alert')).toContainText('Refresh the current salary');
+    await expect(other.locator('mat-snack-bar-container.toast-error')).toContainText('Error: Salary could not be saved.');
     await expect(draft.getByRole('textbox', { name: 'Annual amount', exact: true })).toHaveValue('175.00');
     await expect(draft.getByRole('button', { name: 'Save salary', exact: true })).toBeDisabled();
     await draft.getByRole('button', { name: 'Refresh current salary', exact: true }).click();

@@ -27,6 +27,7 @@ import {
   EmployeeStatus,
 } from '../employee-reference-data';
 import { ConfirmDialogComponent } from '../../core/confirm-dialog/confirm-dialog.component';
+import { NotificationService } from '../../core/notification.service';
 
 @Component({
   selector: 'app-employee-list',
@@ -52,6 +53,7 @@ export class EmployeeList {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
+  private readonly notifications = inject(NotificationService);
 
   protected readonly countries = COUNTRIES;
   protected readonly countryLabels = COUNTRY_LABELS;
@@ -247,11 +249,13 @@ export class EmployeeList {
     request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.actionPending.set(false);
+        this.notifications.success(archive ? 'Employee archived.' : 'Employee reactivated.');
         this.retry();
       },
       error: () => {
         this.actionPending.set(false);
         this.actionError.set('Could not change employee status. Refresh the directory and try again.');
+        this.notifications.error('Could not change employee status. Please try again.');
       },
     });
   }

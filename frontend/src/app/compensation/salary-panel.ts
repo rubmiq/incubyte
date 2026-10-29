@@ -12,6 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { Subscription } from 'rxjs';
 import { PageResponse } from '../employees/employee.model';
 import { Country } from '../employees/employee-reference-data';
+import { NotificationService } from '../core/notification.service';
 import { SALARY_CURRENCIES, Salary, SalaryCurrency, SalaryHistoryEntry, SalaryService } from './salary.service';
 
 const COUNTRY_CURRENCY: Record<Country, SalaryCurrency> = {
@@ -31,6 +32,7 @@ export class SalaryPanel {
   readonly country = input.required<Country>();
   readonly active = input.required<boolean>();
   private readonly service = inject(SalaryService);
+  private readonly notifications = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly formDirective = viewChild.required(FormGroupDirective);
   private currentRequest?: Subscription;
@@ -117,6 +119,7 @@ export class SalaryPanel {
         // stays neutral until the user starts another change.
         this.formDirective().resetForm({ amount: salary.amount, currency: salary.currency, changeReason: '' });
         this.notice.set('Salary saved. The change has been added to history.');
+        this.notifications.success('Salary saved.');
         this.historyPage.set(0);
         this.loadHistory(this.code(), 0);
       },
@@ -126,9 +129,11 @@ export class SalaryPanel {
         if (error.status === 409) {
           this.conflict.set(true);
           this.saveError.set('This salary or employee status changed. Refresh the current salary and review your draft.');
+          this.notifications.error('Salary could not be saved. Refresh and review your draft.');
           return;
         }
         this.saveError.set('Could not save salary. Your draft is preserved. Please try again.');
+        this.notifications.error('Could not save salary. Your draft is preserved.');
         const body: unknown = error.error;
         if (typeof body === 'object' && body !== null && 'fieldErrors' in body && Array.isArray(body.fieldErrors)) {
           for (const field of body.fieldErrors) {

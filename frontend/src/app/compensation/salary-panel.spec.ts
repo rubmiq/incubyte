@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatPaginatorHarness } from '@angular/material/paginator/testing';
 import { MatSelectHarness } from '@angular/material/select/testing';
+import { MatSnackBarHarness } from '@angular/material/snack-bar/testing';
 import { SalaryPanel } from './salary-panel';
 import { Salary, SalaryHistoryEntry } from './salary.service';
 
@@ -82,7 +83,7 @@ describe('Salary workflow', () => {
     expect(button('Save salary').disabled).toBe(true);
   });
 
-  it('sends decimal strings and version, prevents duplicate writes and refreshes history', () => {
+  it('sends decimal strings and version, prevents duplicate writes and refreshes history', async () => {
     start();
     fill();
     submit();
@@ -99,6 +100,8 @@ describe('Salary workflow', () => {
     expect(input('changeReason').getAttribute('aria-invalid')).not.toBe('true');
     expect(element.querySelector('.mat-form-field-invalid')).toBeNull();
     expect(button('Save salary').disabled).toBe(true);
+    const toast = await TestbedHarnessEnvironment.documentRootLoader(fixture).getHarness(MatSnackBarHarness);
+    expect(await toast.getMessage()).toBe('Success: Salary saved.');
   });
 
   it('preserves a conflicting draft and requires explicit refresh before resubmission', () => {
@@ -125,7 +128,7 @@ describe('Salary workflow', () => {
     history(3);
   });
 
-  it('shows server field errors while preserving the draft', () => {
+  it('shows server field errors while preserving the draft', async () => {
     start();
     fill();
     submit();
@@ -135,6 +138,8 @@ describe('Salary workflow', () => {
     fixture.detectChanges();
     expect(input('amount').value).toBe('120.99');
     expect(element.textContent).toContain('Enter a different salary amount or currency.');
+    const toast = await TestbedHarnessEnvironment.documentRootLoader(fixture).getHarness(MatSnackBarHarness);
+    expect(await toast.getMessage()).toBe('Error: Could not save salary. Your draft is preserved.');
   });
 
   it('retries a failed salary load and can establish an initial salary', () => {

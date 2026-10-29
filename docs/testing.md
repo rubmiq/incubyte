@@ -2,16 +2,21 @@
 
 ## Salary workflow (2026-10-29)
 
-- Frontend unit tests: `cd frontend; npm.cmd test -- --watch=false` — 19 passed.
+- Frontend unit tests: `cd frontend; npm.cmd test -- --watch=false` — 25 passed.
 - Frontend production build: `npm.cmd run build` — passed. Existing unused
   confirmation-dialog import and initial bundle budget warnings remain.
+- Notification checks cover top-right placement, success/error text labels,
+  accessible announcements, dismissal, employee creation/update outcomes and
+  salary-save outcomes while preserving inline field errors and drafts.
 - Backend focused suite: 44 passed, including 11 real PostgreSQL salary service
   tests, 6 salary MVC/security tests, and existing authentication, employee,
   analytics-controller and API-contract tests.
 - Playwright: one complete salary browser journey passed in headless Microsoft
-  Edge. It covers session login, employee search, initial salary, decimal input
-  validation, salary update, before/after history, payroll dashboard and two-tab
-  stale-write recovery with the draft preserved. No HTTP mocks are used.
+  Edge. It covers session login, employee creation/profile update notifications
+  across navigation, employee search, initial salary, decimal input validation,
+  salary update, before/after history, payroll dashboard and two-tab stale-write
+  recovery with the draft preserved. Toast placement and dismissal are checked
+  in the browser. No HTTP mocks are used.
 - OpenAPI was regenerated from the contract test; successful and error responses,
   decimal strings, nullable legacy audit fields and supported currencies are included.
 - After restarting the main app, read-only salary/history requests through the

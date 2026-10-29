@@ -15,9 +15,11 @@ Implemented:
 - Explicit synthetic employee/compensation seed, Flyway migrations, generated
   OpenAPI contract, Docker packaging and CI jobs.
 - Browser salary journey with real backend/database and two-tab conflict recovery.
+- Top-right success/error toasts for employee creation/profile edits, salary saves
+  and archive/reactivate actions, with dismissal and persistent inline validation.
 
 See [testing](testing.md) for actual results and commands: 44 focused backend
-checks, 19 frontend unit tests, production build and a Microsoft Edge browser
+checks, 25 frontend unit tests, production build and a Microsoft Edge browser
 journey passed. PostgreSQL integration checks used isolated local PostgreSQL 17
 schemas because Docker Desktop's engine remains unavailable. The full
 PostgreSQL 18 Testcontainers suite, Docker image and remote CI are unverified.
