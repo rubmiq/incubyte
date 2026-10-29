@@ -4,6 +4,35 @@
     <p class="fx-note">{{ dashboard()?.fx_snapshot_note }}</p>
   </div>
 
+  <!-- Filter Controls -->
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <div class="filters">
+        <mat-form-field appearance="outline">
+          <mat-label>Filter by Country</mat-label>
+          <mat-select [formControl]="countryControl">
+            <mat-option value="">All countries</mat-option>
+            @for (country of countries; track country) {
+              <mat-option [value]="country">{{ countryLabels[country] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Filter by Department</mat-label>
+          <mat-select [formControl]="departmentControl">
+            <mat-option value="">All departments</mat-option>
+            @for (department of departments; track department) {
+              <mat-option [value]="department">{{ departmentLabels[department] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-stroked-button (click)="clearFilters()">Clear Filters</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
   <div *ngIf="loading()" class="loading-container">
     <mat-spinner></mat-spinner>
   </div>
@@ -54,31 +83,31 @@
         <table mat-table [dataSource]="getCountryEntries()" class="breakdown-table">
           <!-- Country Column -->
           <ng-container matColumnDef="country">
-            <th mat-header-cell>Country</th>
+            <th mat-header-cell *matHeaderCellDef>Country</th>
             <td mat-cell *matCellDef="let element">{{ element[0] }}</td>
           </ng-container>
 
           <!-- Headcount Column -->
           <ng-container matColumnDef="headcount">
-            <th mat-header-cell>Headcount</th>
+            <th mat-header-cell *matHeaderCellDef>Headcount</th>
             <td mat-cell *matCellDef="let element">{{ element[1].headcount | number }}</td>
           </ng-container>
 
           <!-- Total Payroll Column -->
           <ng-container matColumnDef="total_payroll">
-            <th mat-header-cell>Total Payroll</th>
+            <th mat-header-cell *matHeaderCellDef>Total Payroll</th>
             <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].total_payroll_usd) }}</td>
           </ng-container>
 
           <!-- Mean Salary Column -->
           <ng-container matColumnDef="mean_salary">
-            <th mat-header-cell>Mean Salary</th>
+            <th mat-header-cell *matHeaderCellDef>Mean Salary</th>
             <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].mean_salary_usd) }}</td>
           </ng-container>
 
           <!-- Median Salary Column -->
           <ng-container matColumnDef="median_salary">
-            <th mat-header-cell>Median Salary</th>
+            <th mat-header-cell *matHeaderCellDef>Median Salary</th>
             <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].median_salary_usd) }}</td>
           </ng-container>
 
@@ -97,31 +126,31 @@
         <table mat-table [dataSource]="getDepartmentEntries()" class="breakdown-table">
           <!-- Department Column -->
           <ng-container matColumnDef="department">
-            <th mat-header-cell>Department</th>
+            <th mat-header-cell *matHeaderCellDef>Department</th>
             <td mat-cell *matCellDef="let element">{{ element[0] }}</td>
           </ng-container>
 
           <!-- Headcount Column -->
           <ng-container matColumnDef="headcount">
-            <th mat-header-cell>Headcount</th>
+            <th mat-header-cell *matHeaderCellDef>Headcount</th>
             <td mat-cell *matCellDef="let element">{{ element[1].headcount | number }}</td>
           </ng-container>
 
           <!-- Total Payroll Column -->
           <ng-container matColumnDef="total_payroll">
-            <th mat-header-cell>Total Payroll</th>
+            <th mat-header-cell *matHeaderCellDef>Total Payroll</th>
             <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].total_payroll_usd) }}</td>
           </ng-container>
 
           <!-- Mean Salary Column -->
           <ng-container matColumnDef="mean_salary">
-            <th mat-header-cell>Mean Salary</th>
+            <th mat-header-cell *matHeaderCellDef>Mean Salary</th>
             <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].mean_salary_usd) }}</td>
           </ng-container>
 
           <!-- Median Salary Column -->
           <ng-container matColumnDef="median_salary">
-            <th mat-header-cell>Median Salary</th>
+            <th mat-header-cell *matHeaderCellDef>Median Salary</th>
             <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].median_salary_usd) }}</td>
           </ng-container>
 

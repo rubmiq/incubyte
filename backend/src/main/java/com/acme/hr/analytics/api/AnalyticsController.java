@@ -1,10 +1,13 @@
 package com.acme.hr.analytics.api;
 
 import com.acme.hr.analytics.application.AnalyticsService;
+import com.acme.hr.common.reference.Country;
+import com.acme.hr.employee.persistence.Department;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -24,8 +27,11 @@ public class AnalyticsController {
 
 	@GetMapping("/dashboard")
 	@PreAuthorize("hasRole('HR')")
-	public ResponseEntity<DashboardResponse> getDashboard() {
-		DashboardResponse dashboard = analyticsService.computeDashboard();
+	public ResponseEntity<DashboardResponse> getDashboard(
+			@RequestParam(required = false) Country country,
+			@RequestParam(required = false) Department department) {
+		DashboardResponse dashboard = analyticsService.computeDashboard(
+				country == null ? null : country.name(), department == null ? null : department.name());
 		return ResponseEntity.ok(dashboard);
 	}
 }

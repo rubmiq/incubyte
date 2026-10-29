@@ -543,6 +543,41 @@
         },
         "security" : [ ]
       }
+    },
+    "/api/analytics/dashboard" : {
+      "get" : {
+        "tags" : [ "analytics-controller" ],
+        "operationId" : "getDashboard",
+        "parameters" : [ {
+          "name" : "country",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "US", "GB", "DE", "FR", "NL", "IN", "BR", "AU", "CA", "SG" ]
+          }
+        }, {
+          "name" : "department",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "ENGINEERING", "PRODUCT", "SALES", "MARKETING", "FINANCE", "HUMAN_RESOURCES", "OPERATIONS", "CUSTOMER_SUPPORT", "LEGAL", "IT" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DashboardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -684,11 +719,83 @@
           "parameterName" : {
             "type" : "string"
           },
-          "headerName" : {
-            "type" : "string"
-          },
           "token" : {
             "type" : "string"
+          },
+          "headerName" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CountryStats" : {
+        "type" : "object",
+        "properties" : {
+          "headcount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "total_payroll_usd" : {
+            "type" : "number"
+          },
+          "mean_salary_usd" : {
+            "type" : "number"
+          },
+          "median_salary_usd" : {
+            "type" : "number"
+          }
+        }
+      },
+      "DashboardResponse" : {
+        "type" : "object",
+        "properties" : {
+          "active_headcount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "total_annual_payroll_usd" : {
+            "type" : "number"
+          },
+          "mean_salary_usd" : {
+            "type" : "number"
+          },
+          "median_salary_usd" : {
+            "type" : "number"
+          },
+          "by_country" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/CountryStats"
+            }
+          },
+          "by_department" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/DepartmentStats"
+            }
+          },
+          "fx_snapshot_date" : {
+            "type" : "string"
+          },
+          "fx_snapshot_note" : {
+            "type" : "string"
+          }
+        }
+      },
+      "DepartmentStats" : {
+        "type" : "object",
+        "properties" : {
+          "headcount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "total_payroll_usd" : {
+            "type" : "number"
+          },
+          "mean_salary_usd" : {
+            "type" : "number"
+          },
+          "median_salary_usd" : {
+            "type" : "number"
           }
         }
       }

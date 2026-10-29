@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface CountryStats {
@@ -27,13 +27,25 @@ export interface DashboardResponse {
   fx_snapshot_note: string;
 }
 
+export interface AnalyticsFilters {
+  country?: string;
+  department?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AnalyticsService {
   private readonly http = inject(HttpClient);
 
-  getDashboard(): Observable<DashboardResponse> {
-    return this.http.get<DashboardResponse>('/api/analytics/dashboard');
+  getDashboard(filters?: AnalyticsFilters): Observable<DashboardResponse> {
+    let params = new HttpParams();
+    if (filters?.country) {
+      params = params.set('country', filters.country);
+    }
+    if (filters?.department) {
+      params = params.set('department', filters.department);
+    }
+    return this.http.get<DashboardResponse>('/api/analytics/dashboard', { params });
   }
 }

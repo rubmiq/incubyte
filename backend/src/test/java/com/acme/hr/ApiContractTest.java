@@ -25,6 +25,8 @@ import tools.jackson.databind.ObjectMapper;
 @AutoConfigureMockMvc
 class ApiContractTest {
     @MockitoBean EmployeeService employeeService;
+    @MockitoBean com.acme.hr.analytics.application.AnalyticsService analyticsService;
+    @MockitoBean com.acme.hr.employee.application.EmployeeSeeder employeeSeeder;
     @MockitoBean HrUserRepository hrUserRepository;
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper mapper;
@@ -35,6 +37,10 @@ class ApiContractTest {
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         var contract = mapper.readTree(json);
         assertThat(contract.at("/paths/~1api~1employees/get").isMissingNode()).isFalse();
+        assertThat(contract.at("/paths/~1api~1analytics~1dashboard/get/parameters/0/name").asText())
+                .isEqualTo("country");
+        assertThat(contract.at("/paths/~1api~1analytics~1dashboard/get/parameters/0/schema/enum").toString())
+                .contains("US", "DE");
         assertThat(contract.at("/paths/~1api~1employees~1{employeeCode}~1archive/post").isMissingNode()).isFalse();
         assertThat(contract.at("/components/schemas/CreateEmployeeRequest/properties/firstName/maxLength").asInt())
                 .isEqualTo(100);
