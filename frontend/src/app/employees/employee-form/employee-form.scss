@@ -1,0 +1,33 @@
+.form-card {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+
+  mat-form-field {
+    flex: 1 1 0;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.error-message {
+  color: var(--mat-sys-error, #b3261e);
+}
+
+.state-row {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}

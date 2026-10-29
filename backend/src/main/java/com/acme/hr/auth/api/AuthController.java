@@ -3,6 +3,7 @@ package com.acme.hr.auth.api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,6 +35,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/api/auth/login")
+	@SecurityRequirements
 	public CurrentUserResponse login(
 			@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 		Authentication authenticated = authenticationManager.authenticate(
@@ -63,6 +65,7 @@ public class AuthController {
 	 * both of those events.
 	 */
 	@GetMapping("/api/auth/csrf")
+	@SecurityRequirements
 	public void csrf(CsrfToken csrfToken) {
 		// Resolving the CsrfToken parameter is sufficient to trigger the cookie write.
 	}

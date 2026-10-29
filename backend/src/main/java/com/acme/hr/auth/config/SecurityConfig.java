@@ -59,7 +59,8 @@ public class SecurityConfig {
 				.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers("/api/auth/login", "/api/auth/csrf").permitAll()
 						.requestMatchers("/actuator/health").permitAll()
-						.anyRequest().hasRole("HR"))
+						.requestMatchers("/api/**", "/actuator/**", "/v3/api-docs/**", "/swagger-ui/**").hasRole("HR")
+						.anyRequest().permitAll())
 				.exceptionHandling(exceptions -> exceptions
 						.authenticationEntryPoint(jsonEntryPoint())
 						.accessDeniedHandler(jsonAccessDeniedHandler()))

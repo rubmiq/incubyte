@@ -53,6 +53,12 @@ class AuthSecurityTest {
 	private HrUserDetailsService hrUserDetailsService;
 
 	@Test
+	void appShellRouteIsPublic() throws Exception {
+		// This MVC slice has no bundled SPA; a 404 proves security allowed dispatch.
+		mockMvc.perform(get("/login")).andExpect(status().isNotFound());
+	}
+
+	@Test
 	void loginWithoutCsrfTokenIsRejected() throws Exception {
 		mockMvc.perform(post("/api/auth/login")
 						.contentType(MediaType.APPLICATION_JSON)

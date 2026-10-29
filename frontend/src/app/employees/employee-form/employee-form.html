@@ -1,0 +1,107 @@
+<mat-card class="form-card">
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Edit employee' : 'Add employee' }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (loading()) {
+      <div class="state-row">
+        <mat-spinner diameter="32" />
+      </div>
+    } @else if (loadError()) {
+      <p role="alert">Could not load this employee. Please go back and try again.</p>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>First name</mat-label>
+            <input matInput formControlName="firstName" />
+            @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
+              <mat-error>First name is required.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Last name</mat-label>
+            <input matInput formControlName="lastName" />
+            @if (form.controls.lastName.invalid && form.controls.lastName.touched) {
+              <mat-error>Last name is required.</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" />
+          @if (form.controls.email.hasError('required') && form.controls.email.touched) {
+            <mat-error>Email is required.</mat-error>
+          }
+          @if (form.controls.email.hasError('email') && form.controls.email.touched) {
+            <mat-error>Enter a valid email address.</mat-error>
+          }
+          @if (form.controls.email.hasError('server')) {
+            <mat-error>{{ form.controls.email.getError('server') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Country</mat-label>
+            <mat-select formControlName="country">
+              @for (country of countries; track country) {
+                <mat-option [value]="country">{{ countryLabels[country] }}</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.country.invalid && form.controls.country.touched) {
+              <mat-error>Country is required.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Department</mat-label>
+            <mat-select formControlName="department">
+              @for (department of departments; track department) {
+                <mat-option [value]="department">{{ departmentLabels[department] }}</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.department.invalid && form.controls.department.touched) {
+              <mat-error>Department is required.</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Job title</mat-label>
+            <input matInput formControlName="jobTitle" />
+            @if (form.controls.jobTitle.invalid && form.controls.jobTitle.touched) {
+              <mat-error>Job title is required.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Hired on</mat-label>
+            <input matInput formControlName="hiredOn" type="date" />
+            @if (form.controls.hiredOn.invalid && form.controls.hiredOn.touched) {
+              <mat-error>Hire date is required.</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        @if (submitError(); as message) {
+          <p class="error-message" role="alert">{{ message }}</p>
+        }
+
+        <div class="actions">
+          <button mat-button type="button" (click)="cancel()">Cancel</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="submitting()">
+            @if (submitting()) {
+              <mat-spinner diameter="20" />
+            } @else {
+              Save
+            }
+          </button>
+        </div>
+      </form>
+    }
+  </mat-card-content>
+</mat-card>

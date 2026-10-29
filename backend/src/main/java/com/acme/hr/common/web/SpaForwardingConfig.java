@@ -40,7 +40,8 @@ class SpaForwardingConfig implements WebMvcConfigurer {
 			if (resourcePath.startsWith("api/") || resourcePath.startsWith("actuator/")) {
 				return null;
 			}
-			return new ClassPathResource("/static/index.html");
+			Resource index = new ClassPathResource("/static/index.html");
+			return index.exists() && index.isReadable() ? index : null;
 		}
 	}
 }

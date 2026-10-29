@@ -1,0 +1,41 @@
+@if (loading()) {
+  <div class="state-row">
+    <mat-spinner diameter="32" />
+  </div>
+} @else if (error()) {
+  <p role="alert">Could not load this employee.</p>
+  <a mat-button routerLink="/employees">Back to directory</a>
+} @else if (employee(); as person) {
+  <mat-card class="detail-card">
+    <mat-card-header>
+      <mat-card-title>{{ person.firstName }} {{ person.lastName }}</mat-card-title>
+      <mat-card-subtitle>{{ person.jobTitle }} &middot; {{ person.status }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <dl>
+        <dt>Employee code</dt>
+        <dd>{{ person.employeeCode }}</dd>
+        <dt>Email</dt>
+        <dd>{{ person.email }}</dd>
+        <dt>Country</dt>
+        <dd>{{ countryLabels[person.country] }}</dd>
+        <dt>Department</dt>
+        <dd>{{ departmentLabels[person.department] }}</dd>
+        <dt>Hired on</dt>
+        <dd>{{ person.hiredOn }}</dd>
+      </dl>
+    </mat-card-content>
+    <mat-card-actions>
+      @if (actionError(); as message) {
+        <p role="alert">{{ message }}</p>
+      }
+      <a mat-button [routerLink]="['/employees', person.employeeCode, 'edit']">Edit</a>
+      @if (person.status === 'ACTIVE') {
+        <button mat-button type="button" [disabled]="actionPending()" (click)="archive()">Archive</button>
+      } @else {
+        <button mat-button type="button" [disabled]="actionPending()" (click)="reactivate()">Reactivate</button>
+      }
+      <a mat-button routerLink="/employees">Back to directory</a>
+    </mat-card-actions>
+  </mat-card>
+}

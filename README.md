@@ -65,3 +65,10 @@ cd frontend && npm run build    # strict production build
 This repository is being built in reviewable vertical slices, each ending
 in a commit; see `docs/decisions.md` and commit history for what has
 landed so far and what remains.
+
+See [the implementation checkpoint](docs/progress.md) for completed workflows,
+verification limits and the remaining compensation, analytics and seed slices.
+The generated API contract is checked in at [docs/openapi.json](docs/openapi.json).
+On Windows PowerShell use `npm.cmd` if script execution is restricted, and
+`mvnw.cmd` for the Maven Wrapper. Backend integration tests require a running
+Docker engine, including when running locally without Compose.
