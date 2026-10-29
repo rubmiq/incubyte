@@ -96,6 +96,9 @@ describe('Salary workflow', () => {
     fixture.detectChanges();
     expect(element.textContent).toContain('Salary saved.');
     expect(input('changeReason').value).toBe('');
+    expect(input('changeReason').getAttribute('aria-invalid')).not.toBe('true');
+    expect(element.querySelector('.mat-form-field-invalid')).toBeNull();
+    expect(button('Save salary').disabled).toBe(true);
   });
 
   it('preserves a conflicting draft and requires explicit refresh before resubmission', () => {

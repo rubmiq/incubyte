@@ -1,8 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, effect, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, input, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -32,6 +32,7 @@ export class SalaryPanel {
   readonly active = input.required<boolean>();
   private readonly service = inject(SalaryService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly formDirective = viewChild.required(FormGroupDirective);
   private currentRequest?: Subscription;
   private historyRequest?: Subscription;
   protected readonly currencies = SALARY_CURRENCIES;
@@ -112,7 +113,9 @@ export class SalaryPanel {
         this.form.enable();
         this.saving.set(false);
         this.current.set(salary);
-        this.form.reset({ amount: salary.amount, currency: salary.currency, changeReason: '' });
+        // Clear submitted state as well as controls so the next required reason
+        // stays neutral until the user starts another change.
+        this.formDirective().resetForm({ amount: salary.amount, currency: salary.currency, changeReason: '' });
         this.notice.set('Salary saved. The change has been added to history.');
         this.historyPage.set(0);
         this.loadHistory(this.code(), 0);
