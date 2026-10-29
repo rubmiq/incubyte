@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
 import { combineLatest, catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
 
 import { EmployeeService } from '../employee.service';
@@ -25,6 +26,7 @@ import {
   EMPLOYEE_STATUSES,
   EmployeeStatus,
 } from '../employee-reference-data';
+import { ConfirmDialogComponent } from '../../core/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-employee-list',
@@ -48,6 +50,7 @@ export class EmployeeList {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialog = inject(MatDialog);
 
   protected readonly countries = COUNTRIES;
   protected readonly countryLabels = COUNTRY_LABELS;
@@ -186,11 +189,39 @@ export class EmployeeList {
   }
 
   protected archive(employeeCode: string): void {
-    this.changeStatus(employeeCode, true);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Archive Employee?',
+        message: 'This employee will be marked as archived and will no longer appear in active listings.',
+        confirmText: 'Archive',
+        confirmColor: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.changeStatus(employeeCode, true);
+      }
+    });
   }
 
   protected reactivate(employeeCode: string): void {
-    this.changeStatus(employeeCode, false);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Reactivate Employee?',
+        message: 'This employee will be marked as active again.',
+        confirmText: 'Reactivate',
+        confirmColor: 'primary',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.changeStatus(employeeCode, false);
+      }
+    });
   }
 
   protected retry(): void {
