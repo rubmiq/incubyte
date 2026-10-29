@@ -102,4 +102,10 @@ test('HR establishes salary, updates it, checks audit and dashboard, and reviews
     const archived = await page.request.post(`/api/employees/${employee.employeeCode}/archive`, { headers });
     expect(archived.ok()).toBe(true);
   }
+  await page.getByRole('button', { name: 'Account menu', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Logout', exact: true }).click();
+  await expect(page).toHaveURL(/\/login$/);
+  expect((await page.request.get('/api/auth/me')).status()).toBe(401);
+  await page.goto('/employees');
+  await expect(page).toHaveURL(/\/login$/);
 });
