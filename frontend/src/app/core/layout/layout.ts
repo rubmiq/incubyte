@@ -6,7 +6,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { AuthService } from '../auth/auth.service';
 
 interface NavItem {
@@ -28,7 +29,8 @@ interface NavItem {
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
-    MatTooltipModule,
+    MatMenuModule,
+    MatDividerModule,
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',

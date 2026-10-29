@@ -1,37 +1,59 @@
-<mat-toolbar color="primary" class="app-toolbar">
-  <button mat-icon-button (click)="toggleSidenav()">
+<!-- Top Header -->
+<mat-toolbar color="primary" class="app-header">
+  <button mat-icon-button (click)="toggleSidenav()" class="menu-button">
     <mat-icon>menu</mat-icon>
   </button>
-  <span class="app-title">Salary Management</span>
+  <h1 class="app-title">Salary Management</h1>
   <span class="spacer"></span>
-  <span class="user-info">{{ currentUser()?.username }}</span>
-  <button mat-icon-button (click)="logout()" matTooltip="Logout">
-    <mat-icon>logout</mat-icon>
+
+  <!-- User Menu (Avatar + Dropdown) -->
+  <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+    <mat-icon class="avatar-icon">account_circle</mat-icon>
   </button>
+  <mat-menu #userMenu="matMenu" class="user-menu">
+    <button mat-menu-item disabled>
+      <mat-icon>person</mat-icon>
+      <span>{{ currentUser()?.username }}</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
 </mat-toolbar>
 
-<mat-sidenav-container class="app-sidenav-container">
-  <mat-sidenav
-    #sidenav
-    class="app-sidenav"
-    [opened]="sidenavOpen()"
-    mode="side"
-    [attr.role]="'navigation'"
-  >
-    <mat-nav-list>
-      <mat-list-item
-        *ngFor="let item of navItems"
-        [routerLink]="item.route"
-        routerLinkActive="active"
-        (click)="sidenav.close()"
-      >
-        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-        <span matListItemTitle>{{ item.label }}</span>
-      </mat-list-item>
-    </mat-nav-list>
-  </mat-sidenav>
+<!-- Main Layout -->
+<div class="app-layout-wrapper">
+  <!-- Sidebar -->
+  <mat-sidenav-container class="app-sidenav-container">
+    <mat-sidenav
+      #sidenav
+      class="app-sidenav"
+      [opened]="sidenavOpen()"
+      mode="side"
+      [attr.role]="'navigation'"
+    >
+      <mat-nav-list>
+        <mat-list-item
+          *ngFor="let item of navItems"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: false }"
+          (click)="sidenav.close()"
+          class="nav-item"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </mat-list-item>
+      </mat-nav-list>
+    </mat-sidenav>
 
-  <mat-sidenav-content class="app-content">
-    <router-outlet></router-outlet>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+    <!-- Content Area -->
+    <mat-sidenav-content class="app-content">
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

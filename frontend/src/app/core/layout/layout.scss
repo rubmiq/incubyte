@@ -1,10 +1,24 @@
-.app-toolbar {
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-header {
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 0 16px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+
+  .menu-button {
+    margin-right: 12px;
+  }
 
   .app-title {
+    margin: 0;
     font-size: 20px;
     font-weight: 500;
   }
@@ -13,59 +27,133 @@
     flex: 1 1 auto;
   }
 
-  .user-info {
-    font-size: 14px;
-    margin-right: 12px;
+  .user-menu-button {
+    .avatar-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
   }
 }
 
-.app-sidenav-container {
-  height: calc(100vh - 64px);
+.app-layout-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 
-  .app-sidenav {
-    width: 240px;
-    border-right: 1px solid rgba(0, 0, 0, 0.12);
+  .app-sidenav-container {
+    flex: 1;
+    display: flex;
 
-    mat-nav-list {
-      padding-top: 12px;
+    .app-sidenav {
+      width: 240px;
+      border-right: 1px solid rgba(0, 0, 0, 0.12);
 
-      mat-list-item {
-        height: 48px;
-        border-radius: 4px;
-        margin: 0 8px 4px;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
+      mat-nav-list {
+        padding-top: 12px;
 
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.04);
-        }
-
-        &.active {
-          background-color: rgba(25, 118, 210, 0.12);
-          color: #1976d2;
+        .nav-item {
+          height: 48px;
+          border-radius: 4px;
+          margin: 0 8px 4px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          color: rgba(0, 0, 0, 0.87);
 
           mat-icon {
+            margin-right: 12px;
+          }
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+          }
+
+          &.active {
+            background-color: rgba(25, 118, 210, 0.12);
             color: #1976d2;
+            font-weight: 500;
+
+            mat-icon {
+              color: #1976d2;
+            }
           }
         }
+      }
+    }
 
-        mat-icon {
-          margin-right: 12px;
+    .app-content {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+
+      .content-wrapper {
+        flex: 1;
+        padding: 24px;
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+      }
+    }
+  }
+}
+
+::ng-deep .user-menu {
+  mat-menu-content {
+    padding: 8px 0 !important;
+
+    button[mat-menu-item] {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      height: 48px !important;
+
+      &[disabled] {
+        cursor: default;
+        opacity: 1;
+      }
+
+      mat-icon {
+        margin: 0 !important;
+      }
+    }
+  }
+}
+
+@media (max-width: 960px) {
+  .app-layout-wrapper {
+    .app-sidenav-container {
+      .app-sidenav {
+        width: 200px;
+      }
+
+      .app-content {
+        .content-wrapper {
+          padding: 16px;
         }
       }
     }
   }
-
-  .app-content {
-    padding: 24px;
-    overflow: auto;
-  }
 }
 
 @media (max-width: 600px) {
-  .app-sidenav-container {
-    .app-sidenav {
-      width: 200px;
+  .app-header {
+    .app-title {
+      font-size: 18px;
+    }
+  }
+
+  .app-layout-wrapper {
+    .app-sidenav-container {
+      .app-sidenav {
+        width: 200px;
+      }
+
+      .app-content {
+        .content-wrapper {
+          padding: 12px;
+        }
+      }
     }
   }
 }
