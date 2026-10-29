@@ -1,14 +1,4 @@
-.spacer {
-  flex: 1 1 auto;
-}
-
-.username {
-  margin-inline-end: 1rem;
-  font-size: 0.9rem;
-}
-
-.app-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.5rem;
+/* Root component styles (minimal) */
+:host {
+  display: block;
 }
