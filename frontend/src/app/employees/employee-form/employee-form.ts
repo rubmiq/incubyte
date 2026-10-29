@@ -8,6 +8,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { EmployeeService } from '../employee.service';
 import { ApiError } from '../../core/api-error.model';
@@ -30,6 +32,8 @@ import {
     MatInputModule,
     MatSelectModule,
     MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   templateUrl: './employee-form.html',
   styleUrl: './employee-form.scss',
@@ -57,7 +61,7 @@ export class EmployeeForm {
     country: new FormControl<Country | null>(null, { validators: [Validators.required] }),
     department: new FormControl<Department | null>(null, { validators: [Validators.required] }),
     jobTitle: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    hiredOn: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    hiredOn: new FormControl<Date | null>(null, { validators: [Validators.required] }),
   });
 
   protected get isEditMode(): boolean {
@@ -82,7 +86,7 @@ export class EmployeeForm {
             country: employee.country,
             department: employee.department,
             jobTitle: employee.jobTitle,
-            hiredOn: employee.hiredOn,
+            hiredOn: new Date(employee.hiredOn),
           });
         },
         error: () => {
@@ -104,17 +108,22 @@ export class EmployeeForm {
     }
 
     const value = this.form.getRawValue();
-    if (!value.country || !value.department) {
+    if (!value.country || !value.department || !value.hiredOn) {
       return;
     }
 
     this.submitting.set(true);
     this.submitError.set(null);
 
+    // Convert Date to ISO string for API
+    const hiredOnString = value.hiredOn instanceof Date
+      ? value.hiredOn.toISOString().split('T')[0]
+      : value.hiredOn;
+
     const employeeCode = this.code();
     const request$ = employeeCode
-      ? this.employeeService.update(employeeCode, { ...value, country: value.country, department: value.department })
-      : this.employeeService.create({ ...value, country: value.country, department: value.department });
+      ? this.employeeService.update(employeeCode, { ...value, hiredOn: hiredOnString, country: value.country, department: value.department })
+      : this.employeeService.create({ ...value, hiredOn: hiredOnString, country: value.country, department: value.department });
 
     request$.subscribe({
       next: (employee) => {

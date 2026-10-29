@@ -41,6 +41,7 @@ import { ConfirmDialogComponent } from '../../core/confirm-dialog/confirm-dialog
     MatSelectModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    ConfirmDialogComponent,
   ],
   templateUrl: './employee-list.html',
   styleUrl: './employee-list.scss',

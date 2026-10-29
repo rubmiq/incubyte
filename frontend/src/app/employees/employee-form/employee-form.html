@@ -80,7 +80,9 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Hired on</mat-label>
-            <input matInput formControlName="hiredOn" type="date" />
+            <input matInput [matDatepicker]="picker" formControlName="hiredOn" />
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
             @if (form.controls.hiredOn.invalid && form.controls.hiredOn.touched) {
               <mat-error>Hire date is required.</mat-error>
             }
