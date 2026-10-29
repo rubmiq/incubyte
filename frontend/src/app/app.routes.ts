@@ -33,6 +33,12 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./analytics/dashboard/dashboard').then((m) => m.Dashboard),
+  },
   { path: '', pathMatch: 'full', redirectTo: 'employees' },
   { path: '**', redirectTo: 'employees' },
 ];

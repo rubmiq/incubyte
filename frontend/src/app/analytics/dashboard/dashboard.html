@@ -1,0 +1,138 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Payroll Dashboard</h1>
+    <p class="fx-note">{{ dashboard()?.fx_snapshot_note }}</p>
+  </div>
+
+  <div *ngIf="loading()" class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="error() && !loading()" class="error-container">
+    <p class="error-message">Failed to load dashboard data.</p>
+    <button mat-raised-button color="primary" (click)="retry()">Retry</button>
+  </div>
+
+  <div *ngIf="dashboard() && !loading()" class="dashboard-content">
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="card-label">Active Headcount</div>
+          <div class="card-value">{{ dashboard()?.active_headcount | number }}</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="card-label">Total Annual Payroll</div>
+          <div class="card-value">{{ formatCurrency(dashboard()?.total_annual_payroll_usd || 0) }}</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="card-label">Mean Salary</div>
+          <div class="card-value">{{ formatCurrency(dashboard()?.mean_salary_usd || 0) }}</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="card-label">Median Salary</div>
+          <div class="card-value">{{ formatCurrency(dashboard()?.median_salary_usd || 0) }}</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Breakdown by Country -->
+    <mat-card class="breakdown-card">
+      <mat-card-header>
+        <mat-card-title>By Country</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="getCountryEntries()" class="breakdown-table">
+          <!-- Country Column -->
+          <ng-container matColumnDef="country">
+            <th mat-header-cell>Country</th>
+            <td mat-cell *matCellDef="let element">{{ element[0] }}</td>
+          </ng-container>
+
+          <!-- Headcount Column -->
+          <ng-container matColumnDef="headcount">
+            <th mat-header-cell>Headcount</th>
+            <td mat-cell *matCellDef="let element">{{ element[1].headcount | number }}</td>
+          </ng-container>
+
+          <!-- Total Payroll Column -->
+          <ng-container matColumnDef="total_payroll">
+            <th mat-header-cell>Total Payroll</th>
+            <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].total_payroll_usd) }}</td>
+          </ng-container>
+
+          <!-- Mean Salary Column -->
+          <ng-container matColumnDef="mean_salary">
+            <th mat-header-cell>Mean Salary</th>
+            <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].mean_salary_usd) }}</td>
+          </ng-container>
+
+          <!-- Median Salary Column -->
+          <ng-container matColumnDef="median_salary">
+            <th mat-header-cell>Median Salary</th>
+            <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].median_salary_usd) }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="countryColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: countryColumns;"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Breakdown by Department -->
+    <mat-card class="breakdown-card">
+      <mat-card-header>
+        <mat-card-title>By Department</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="getDepartmentEntries()" class="breakdown-table">
+          <!-- Department Column -->
+          <ng-container matColumnDef="department">
+            <th mat-header-cell>Department</th>
+            <td mat-cell *matCellDef="let element">{{ element[0] }}</td>
+          </ng-container>
+
+          <!-- Headcount Column -->
+          <ng-container matColumnDef="headcount">
+            <th mat-header-cell>Headcount</th>
+            <td mat-cell *matCellDef="let element">{{ element[1].headcount | number }}</td>
+          </ng-container>
+
+          <!-- Total Payroll Column -->
+          <ng-container matColumnDef="total_payroll">
+            <th mat-header-cell>Total Payroll</th>
+            <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].total_payroll_usd) }}</td>
+          </ng-container>
+
+          <!-- Mean Salary Column -->
+          <ng-container matColumnDef="mean_salary">
+            <th mat-header-cell>Mean Salary</th>
+            <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].mean_salary_usd) }}</td>
+          </ng-container>
+
+          <!-- Median Salary Column -->
+          <ng-container matColumnDef="median_salary">
+            <th mat-header-cell>Median Salary</th>
+            <td mat-cell *matCellDef="let element">{{ formatCurrency(element[1].median_salary_usd) }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="departmentColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: departmentColumns;"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="navigation">
+      <button mat-stroked-button routerLink="/employees">Back to Employees</button>
+    </div>
+  </div>
+</div>

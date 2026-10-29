@@ -34,7 +34,10 @@
     </mat-select>
   </mat-form-field>
 
-  <a mat-flat-button color="primary" routerLink="/employees/new">Add employee</a>
+  <div class="actions">
+    <a mat-flat-button color="primary" routerLink="/employees/new">Add employee</a>
+    <a mat-stroked-button routerLink="/dashboard">Dashboard</a>
+  </div>
 </section>
 
 @if (actionError(); as message) {
